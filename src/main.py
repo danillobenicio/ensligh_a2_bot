@@ -5,6 +5,23 @@ from telegram import Update
 from telegram.ext import Application, MessageHandler, filters, ContextTypes
 from google import genai
 from datetime import datetime
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"OK")
+
+def run_server():
+    import os
+    port = int(os.environ.get("PORT", 10000))  # 🔥 importante pro Render
+    server = HTTPServer(("0.0.0.0", port), Handler)
+    server.serve_forever()
+
+# inicia servidor em paralelo
+threading.Thread(target=run_server).start()
 
 requests_today = 0
 MAX_REQUESTS = 30  # 🔥 seu limite diário
